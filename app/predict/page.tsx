@@ -272,9 +272,9 @@ export default function PredictPage() {
 
                 {/* Camera preview */}
                 {showCamera && (
-                  <div className="mb-5 relative rounded-2xl overflow-hidden">
-                    <video ref={videoRef} autoPlay playsInline className="w-full rounded-2xl" style={{ maxHeight: 340 }} />
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3">
+                  <div className="mb-5 relative rounded-2xl overflow-hidden bg-black min-h-[300px] flex items-center justify-center">
+                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover rounded-2xl" style={{ maxHeight: '60vh' }} />
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 z-10">
                       <button onClick={capturePhoto}
                         className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-green-700 shadow-lg transition">
                         <Camera className="w-4 h-4" />{t('capture')}
