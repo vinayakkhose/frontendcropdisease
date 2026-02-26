@@ -375,8 +375,7 @@ export default function PredictPage() {
                 </div>
 
                 {/* Camera button (mobile only) */}
-                {!showCamera && !preview && typeof window !== 'undefined' &&
-                  ('mediaDevices' in navigator) && (
+                {!showCamera && !preview && typeof window !== 'undefined' && (
                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                       onClick={startCamera}
                       className="w-full mt-4 flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-semibold shadow transition">
