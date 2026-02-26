@@ -1,7 +1,0 @@
-{
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/analytics/page": "app/analytics/page.js",
-  "/farmers-guide/page": "app/farmers-guide/page.js"
-}
