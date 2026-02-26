@@ -270,23 +270,6 @@ export default function PredictPage() {
                   {t('upload_image_title')}
                 </h2>
 
-                {/* Camera preview */}
-                {showCamera && (
-                  <div className="mb-5 relative rounded-2xl overflow-hidden bg-black min-h-[300px] flex items-center justify-center">
-                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover rounded-2xl" style={{ maxHeight: '60vh' }} />
-                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 z-10">
-                      <button onClick={capturePhoto}
-                        className="flex items-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-green-700 shadow-lg transition">
-                        <Camera className="w-4 h-4" />{t('capture')}
-                      </button>
-                      <button onClick={stopCamera}
-                        className="bg-gray-900/70 text-white px-5 py-2.5 rounded-xl hover:bg-gray-900 transition">
-                        {t('cancel')}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
                 {/* Drop zone */}
                 {!showCamera && (
                   <div {...getRootProps()}
@@ -378,7 +361,7 @@ export default function PredictPage() {
                 {!showCamera && !preview && typeof window !== 'undefined' && (
                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                       onClick={startCamera}
-                      className="w-full mt-4 flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-semibold shadow transition">
+                      className="w-full mt-4 md:hidden flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-semibold shadow transition">
                       <Camera className="w-5 h-5" />{t('take_photo')}
                     </motion.button>
                   )}
@@ -619,6 +602,54 @@ export default function PredictPage() {
           </div>
         </div>
       </div>
+
+      {/* Full-screen mobile camera overlay */}
+      <AnimatePresence>
+        {showCamera && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center overscroll-none"
+          >
+            {/* Safe area top padding for notches */}
+            <div className="w-full flex-1 relative flex items-center justify-center pb-24">
+              <video 
+                ref={videoRef} 
+                autoPlay 
+                playsInline 
+                muted 
+                className="w-full max-h-[85vh] object-cover rounded-b-3xl" 
+              />
+              <div className="absolute top-4 right-4 z-10">
+                <button onClick={stopCamera} className="bg-black/50 text-white p-3 rounded-full backdrop-blur-md">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Bottom controls */}
+            <div className="absolute bottom-0 left-0 right-0 h-28 bg-black bg-opacity-80 backdrop-blur-lg flex items-center justify-center gap-8 px-6 pb-6 pt-4 rounded-t-[40px]">
+              <button 
+                onClick={stopCamera}
+                className="text-white/80 hover:text-white font-medium text-lg px-4"
+              >
+                {t('cancel')}
+              </button>
+              
+              {/* Big capture button */}
+              <button 
+                onClick={capturePhoto}
+                className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform"
+              >
+                <div className="w-[66px] h-[66px] bg-white rounded-full"></div>
+              </button>
+              
+              <div className="w-16"></div> {/* Spacer to center the capture button */}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </ProtectedRoute>
   )
 }
