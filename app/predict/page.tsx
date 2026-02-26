@@ -134,6 +134,13 @@ export default function PredictPage() {
   const streamRef = useRef<MediaStream | null>(null)
   const resultsRef = useRef<HTMLDivElement>(null)
 
+  // Wait for the video element to mount, then attach the stream
+  useEffect(() => {
+    if (showCamera && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current
+    }
+  }, [showCamera])
+
   const onDrop = useCallback((files: File[]) => {
     if (files.length > 0) {
       setFile(files[0])
@@ -207,7 +214,7 @@ export default function PredictPage() {
       }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       streamRef.current = stream
-      if (videoRef.current) { videoRef.current.srcObject = stream; setShowCamera(true) }
+      setShowCamera(true)
     } catch (err: any) { 
         console.error('Camera error:', err)
         if (err.name === 'NotAllowedError') {
