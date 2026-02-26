@@ -149,8 +149,9 @@ export default function PredictPage() {
     onDrop,
   })
 
-  const handlePredict = useCallback(async () => {
-    if (!file) { toast.error(t('please_select_image')); return }
+  const handlePredict = useCallback(async (fileOverride?: File | null) => {
+    const targetFile = fileOverride !== undefined ? fileOverride : file;
+    if (!targetFile) { toast.error(t('please_select_image')); return }
     setLoading(true)
     setError(null)
     setAnalysisStep(0)
@@ -161,7 +162,7 @@ export default function PredictPage() {
 
     try {
       const effectiveCrop = cropType === '_custom_' ? customCrop.trim() : cropType
-      const res = await predictionAPI.predict(file, effectiveCrop || undefined, region || undefined, soilType || undefined)
+      const res = await predictionAPI.predict(targetFile, effectiveCrop || undefined, region || undefined, soilType || undefined)
       const norm = normalise(res != null && typeof res === 'object' ? res : {})
       setResult(norm)
       if (!norm.not_plant) {
@@ -226,10 +227,11 @@ export default function PredictPage() {
     canvas.toBlob(blob => {
       if (blob) {
         const f = new File([blob], 'capture.jpg', { type: 'image/jpeg' })
-        setFile(f); setPreview(URL.createObjectURL(blob)); setResult(null); stopCamera()
+        setFile(f); setPreview(URL.createObjectURL(blob)); setResult(null); stopCamera();
+        handlePredict(f)
       }
     }, 'image/jpeg', 0.95)
-  }, [stopCamera])
+  }, [stopCamera, handlePredict])
 
   const risk = result ? (riskStyle[result.risk_level] ?? riskStyle.low) : null
 
@@ -386,7 +388,7 @@ export default function PredictPage() {
                 <motion.button
                   whileHover={!file || loading ? {} : { scale: 1.02 }}
                   whileTap={!file || loading ? {} : { scale: 0.97 }}
-                  onClick={handlePredict}
+                  onClick={() => handlePredict()}
                   disabled={!file || loading}
                   className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 text-white py-3.5 rounded-xl font-bold shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
