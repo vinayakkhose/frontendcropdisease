@@ -200,10 +200,21 @@ export default function PredictPage() {
 
   const startCamera = useCallback(async () => {
     try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        toast.error('Camera access requires a secure HTTPS connection or localhost.')
+        return
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       streamRef.current = stream
       if (videoRef.current) { videoRef.current.srcObject = stream; setShowCamera(true) }
-    } catch { toast.error(t('camera_denied')) }
+    } catch (err: any) { 
+        console.error('Camera error:', err)
+        if (err.name === 'NotAllowedError') {
+           toast.error('Camera permission was denied. Enable it in your browser settings.')
+        } else {
+           toast.error(t('camera_denied') + ' (Ensure HTTPS)') 
+        }
+    }
   }, [t])
 
   const capturePhoto = useCallback(() => {
@@ -363,7 +374,7 @@ export default function PredictPage() {
 
                 {/* Camera button (mobile only) */}
                 {!showCamera && !preview && typeof window !== 'undefined' &&
-                  /Android|webOS|iPhone|iPad|iPod/i.test(navigator.userAgent) && (
+                  ('mediaDevices' in navigator) && (
                     <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
                       onClick={startCamera}
                       className="w-full mt-4 flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-xl font-semibold shadow transition">
